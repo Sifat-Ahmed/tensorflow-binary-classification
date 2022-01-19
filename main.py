@@ -12,15 +12,22 @@ from tqdm.keras import TqdmCallback
 from tensorflow.keras.models import load_model
 
 def main():
+
+    ## creating the cofig reference to access global parameters
     cfg = Config()
-    
-    history = defaultdict()
-    history['val_loss'], history['train_loss'] = list(), list()
-    history['val_acc'], history['train_acc'] = list(), list()
 
     print('Creating training, validation set')
-    (train_images, train_labels), (val_images, val_labels) = get_train_test(cfg.dataset_dir, validation_size=0.3, return_test=False)
+    ## creating the training and validation dataset
+    ## to get the test dataset, set 'return_test=True' and put 'test_size=some_value < 1'
+    (train_images, train_labels), (val_images, val_labels) = get_train_test(cfg.dataset_dir,
+                                                                            validation_size=0.3,
+                                                                            return_test=False)
 
+    ## creating a callback object for the model
+    ## saves the model based on the best validation accuracy
+    ## Saves the whole model
+    ## Model name is in the cfg file
+    ## for accuracy the mode is 'max', in case of loss it should be 'min'
     model_checkpoint_callback = ModelCheckpoint(
         filepath=cfg.model_path,
         save_weights_only=False,
@@ -29,6 +36,8 @@ def main():
         save_best_only=True)
 
 
+    ## creating the dataset generator object for training
+    ## it takes a list image paths and labels
     train_dataset = CustomDataset(
         train_images,
         train_labels,
@@ -37,6 +46,7 @@ def main():
         batch_size=cfg.batch_size,
         transform=cfg.train_transform)
 
+    ## creating the validation dataset generator
     val_dataset = CustomDataset(
         val_images,
         val_labels,
@@ -44,7 +54,12 @@ def main():
         image_size=cfg.image_size,
         transform=cfg.val_transform)
 
-
+    ## if the saved model already exists then load the model for training
+    """
+    TODO: compare the model architecture. There is a possibility that you might end up loading a
+    different model rather than the model you want because we are loading the whole model rather the 
+    weights of the model. So class definition might change. 
+    """
     if os.path.isfile(cfg.model_path):
         print('Saved model found and loading')
         model = load_model(os.path.join(os.getcwd(), cfg.model_path))
@@ -57,10 +72,8 @@ def main():
                         validation_data= val_dataset,
                         epochs=cfg.epochs,
                         verbose=0,
+                        ## there are two callbacks, one for model and another for TQDM. TQDM will only work when the verbose = 0
                         callbacks=[model_checkpoint_callback, TqdmCallback()])
 
+    ## plotting the history and saves the figure in plots folder
     plot(history)
-    
-
-if __name__ == '__main__':
-    main()

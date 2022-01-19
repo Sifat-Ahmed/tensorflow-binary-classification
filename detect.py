@@ -16,8 +16,6 @@ class Detect:
         else:
             raise("Model path not found")
         
-
-        
     def _preprocess_image(self, image):
         if self._cfg.resize:
             image = cv2.resize(image, self._cfg.image_size)
@@ -76,10 +74,6 @@ class Detect:
             #cv2.imshow('output', image)
             count += 1
             cv2.waitKey(100)
-        #     plt.figure(figsize=(25, 15))
-        #     plt.imshow(image)
-        #     plt.show()
-        
         
         
 

@@ -1,22 +1,8 @@
+import os
+
 import matplotlib.pyplot as plt
 
-def plot(history, name='figure.png'):
-    # plt.plot(history.history['accuracy'])
-    # plt.plot(history.history['val_accuracy'])
-    # plt.title('model accuracy')
-    # plt.ylabel('accuracy')
-    # plt.xlabel('epoch')
-    # plt.legend(['train', 'validation'], loc='upper left')
-    # plt.show()
-    # # "Loss"
-    # plt.plot(history.history['loss'])
-    # plt.plot(history.history['val_loss'])
-    # plt.title('model loss')
-    # plt.ylabel('loss')
-    # plt.xlabel('epoch')
-    # plt.legend(['train', 'validation'], loc='upper left')
-    # plt.show()
-
+def plot(history, name=None):
     fig, (ax1, ax2) = plt.subplots(1, 2)
     fig.suptitle('Accuracy and Loss')
     ax1.plot(history.history['accuracy'])
@@ -31,5 +17,7 @@ def plot(history, name='figure.png'):
     ax1.label_outer()
     ax2.label_outer()
 
-    #plt.show()
-    plt.savefig('plots/'+name)
+    plt.show()
+    if name:
+        os.makedirs('plots', exist_ok=True)
+        plt.savefig('plots/'+name)
