@@ -77,3 +77,7 @@ def main():
 
     ## plotting the history and saves the figure in plots folder
     plot(history)
+
+    
+    if __name__ == '__main__':
+        main()
