@@ -17,6 +17,10 @@ def _get_image_labels(root_dir):
     return images, labels
 
 
+def get_data_and_labels(data_dir):
+    images, labels = _get_image_labels(data_dir)
+    return images, labels
+
 def get_train_test(data_dir, validation_size = 0.08, return_test = True, test_size = 0.02):
     
     images, labels = _get_image_labels(data_dir)

@@ -2,27 +2,30 @@ import os
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 
 from tensorflow.keras.callbacks import ModelCheckpoint
-from dataset.utils import get_train_test
+from dataset.utils import get_train_test, get_data_and_labels
 from dataset.dataset import CustomDataset
 from visualize import plot
 from config import Config
 from collections import defaultdict
 from model.model import CNN
+from model.pretrained import Resnet50TL
 from tqdm.keras import TqdmCallback
 from tensorflow.keras.models import load_model
 
-def main():
 
+def main():
     ## creating the cofig reference to access global parameters
     cfg = Config()
 
     print('Creating training, validation set')
     ## creating the training and validation dataset
     ## to get the test dataset, set 'return_test=True' and put 'test_size=some_value < 1'
-    (train_images, train_labels), (val_images, val_labels) = get_train_test(cfg.dataset_dir,
-                                                                            validation_size=0.3,
-                                                                            return_test=False)
+    (train_images, train_labels) = get_data_and_labels(cfg.dataset_dir)
+    (val_images, val_labels) = get_data_and_labels(cfg.validation_dir)
 
+
+    print('Found {} images and {} labels for training'.format(len(train_images), len(train_labels)))
+    print('Found {} images and {} labels for validation'.format(len(val_images), len(val_labels)))
     ## creating a callback object for the model
     ## saves the model based on the best validation accuracy
     ## Saves the whole model
@@ -34,7 +37,6 @@ def main():
         monitor='val_accuracy',
         mode='max',
         save_best_only=True)
-
 
     ## creating the dataset generator object for training
     ## it takes a list image paths and labels
@@ -64,12 +66,12 @@ def main():
         print('Saved model found and loading')
         model = load_model(os.path.join(os.getcwd(), cfg.model_path))
     else:
-        model = CNN(input_shape=(cfg.image_size[0], cfg.image_size[1], 3),
+        model = Resnet50TL(input_shape=(cfg.image_size[0], cfg.image_size[1], 3),
                     num_classes=cfg.num_classes).get_model()
 
     print('Starting to train...')
     history = model.fit(train_dataset,
-                        validation_data= val_dataset,
+                        validation_data=val_dataset,
                         epochs=cfg.epochs,
                         verbose=0,
                         ## there are two callbacks, one for model and another for TQDM. TQDM will only work when the verbose = 0
@@ -77,3 +79,7 @@ def main():
 
     ## plotting the history and saves the figure in plots folder
     plot(history)
+
+
+if __name__ == '__main__':
+    main()

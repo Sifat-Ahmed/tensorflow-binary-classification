@@ -45,6 +45,9 @@ class CustomDataset(Sequence):
         #image_filepath = self._images[idx]
         image = cv2.imread(image_path) #tf.keras.preprocessing.image.load_img(image_path)
         #image = tf.keras.preprocessing.image.img_to_array(image)
+        # if image is None:
+        #     print(image_path)
+
         if self._resize:
             image = cv2.resize(image, self._image_size, interpolation = cv2.INTER_AREA)
 

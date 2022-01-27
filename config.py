@@ -6,9 +6,11 @@ class Config:
     def __init__(self) -> None:
 
         self.num_classes = 1
-        self.epochs = 50
-        self.batch_size = 512
-        self.dataset_dir = r'/home/workstaion/workspace/DATASET_ALL/segmented_smoke/'
+        self.epochs = 5
+        self.batch_size = 124
+        self.dataset_dir = r'/home/workstaion/Downloads/data/202106_LSIL_NILM_trial1/train'
+        self.validation_dir  = r'/home/workstaion/Downloads/data/202106_LSIL_NILM_trial1/validation'
+
 
         self.resize = True
         self.image_size = (32, 32)
